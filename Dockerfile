@@ -15,6 +15,7 @@ EXPOSE 8000
 # && \ puts everythin on one line so multiple images aren't being made
 # python -m venv /py   >> Creates a new virtual environment for storing dependencies
 # /py/bin/pip install --upgrade pip    >> Upgrade pip for virtual environment
+# apk add necessary for integration with psycopg2 
 # /py/bin/pip install -r /tmp/requirements.txt     >> install list of requirements
 # rm -rf /tmp    >> remove /tmp directory. don't want extra dependencies on our image once its been created
 # adduser \   creates a user so you're not using root user, using root user can be bad if attacked
@@ -22,11 +23,15 @@ EXPOSE 8000
 ARG DEV=false
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [$DEV = "true"]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \ 
         --no-create-home \
