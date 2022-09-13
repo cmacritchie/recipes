@@ -40,3 +40,17 @@ Applying migrationns
 - Use Django CLI
     - python manage.py migrate
 - run it after waiting for database
+
+IF you think you'll need user model in the future, create it 
+
+docker-compose run --rm app sh -c "python manage.py makemigrations"  //create models
+docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py migrate"
+
+^^ failed so...
+docker volume ls
+
+docker volume rm <volume name>
+
+<!-- Create a Super User? -->
+docker-compose run --rm app sh -c "python manage.py createsuperuser"
+
